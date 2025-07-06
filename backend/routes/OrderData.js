@@ -4,7 +4,7 @@ const Order = require("../models/Orders");
 
 // Route 1: Create an order using POST "/api/order/createorder"
 router.post("/OrderData", async (req, res) => {
-    console.log("Received order body:", req.body);
+    // console.log("Received order body:", req.body);
     let data = req.body.order_data;
     if (!Array.isArray(data)) return res.status(400).json({ success: false, message: "Invalid order_data" });
 

@@ -2,7 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 export default function SignUp() {
-  const [credentails, setCredentials] = React.useState({ name: "", email: "", location: "", password: "" });
+  const [credentails, setCredentials] = React.useState({
+    name: "",
+    email: "",
+    location: "",
+    password: ""
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,9 +20,10 @@ export default function SignUp() {
         name: credentails.name,
         email: credentails.email,
         location: credentails.location,
-        password: credentails.password
+        password: credentails.password,
       }),
     });
+
     const json = await response.json();
     console.log(json);
     if (json.success) {
@@ -32,42 +38,102 @@ export default function SignUp() {
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit}>
-        <div className='container'>
+    <div className="signup-bg d-flex align-items-center justify-content-center" style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
+      <div className="card p-4 shadow-lg rounded" style={{ width: '100%', maxWidth: '500px' }}>
+        <h2 className="text-center text-success mb-4">Create Your Account</h2>
+        <form onSubmit={handleSubmit}>
 
           {/* Name */}
-          <div className='mb-3'>
-            <label htmlFor="name" className="form-label">Name</label>
-            <input type="text" className="form-control" id="name" name="name" value={credentails.name} onChange={onChange} />
-            <div className="form-text">We'll never share your name with anyone else.</div>
+          <div className="mb-3">
+            <label htmlFor="name" className="form-label fw-semibold">Name</label>
+            <input
+              type="text"
+              className="form-control shadow-sm"
+              id="name"
+              name="name"
+              value={credentails.name}
+              onChange={onChange}
+              required
+            />
+            <div className="form-text text-muted">We'll never share your name.</div>
           </div>
 
           {/* Email */}
           <div className="mb-3">
-            <label htmlFor="email" className="form-label">Email address</label>
-            <input type="email" className="form-control" id="email" name="email" value={credentails.email} onChange={onChange} />
-            <div className="form-text">We'll never share your email with anyone else.</div>
+            <label htmlFor="email" className="form-label fw-semibold">Email address</label>
+            <input
+              type="email"
+              className="form-control shadow-sm"
+              id="email"
+              name="email"
+              value={credentails.email}
+              onChange={onChange}
+              required
+            />
+            <div className="form-text text-muted">We'll never share your email.</div>
           </div>
 
           {/* Location */}
           <div className="mb-3">
-            <label htmlFor="location" className="form-label">Location</label>
-            <input type="text" className="form-control" id="location" name="location" value={credentails.location} onChange={onChange} />
-            <div className="form-text">We'll never share your location with anyone else.</div>
+            <label htmlFor="location" className="form-label fw-semibold">Location</label>
+            <input
+              type="text"
+              className="form-control shadow-sm"
+              id="location"
+              name="location"
+              value={credentails.location}
+              onChange={onChange}
+              required
+            />
+            <div className="form-text text-muted">We don’t track exact address.</div>
           </div>
 
-          {/* Password */}
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">Password</label>
-            <input type="password" className="form-control" id="password" name="password" value={credentails.password} onChange={onChange} />
+          {/* Password with tooltip */}
+          <div className="mb-3 position-relative">
+            <label htmlFor="password" className="form-label fw-semibold">Password</label>
+            <input
+              type="password"
+              className="form-control shadow-sm"
+              id="password"
+              name="password"
+              value={credentails.password}
+              onChange={onChange}
+              required
+              onFocus={() => {
+                const tip = document.getElementById('signup-password-tip');
+                if (tip) tip.style.display = 'block';
+              }}
+              onBlur={() => {
+                const tip = document.getElementById('signup-password-tip');
+                if (tip) tip.style.display = 'none';
+              }}
+            />
+            <div
+              id="signup-password-tip"
+              className="text-muted small position-absolute"
+              style={{
+                top: '100%',
+                left: 0,
+                zIndex: 10,
+                backgroundColor: '#fff',
+                border: '1px solid #ced4da',
+                padding: '8px',
+                marginTop: '5px',
+                borderRadius: '4px',
+                display: 'none',
+              }}
+            >
+              🔒 Tip: Use at least 8 characters, a symbol, a number, and a capital letter
+            </div>
           </div>
 
           {/* Buttons */}
-          <button type="submit" className="btn btn-success">Submit</button>
-          <Link to="/Login" className="btn btn-danger m-3">Log In</Link>
-        </div>
-      </form>
-    </>
+          <div className="d-grid gap-2 mt-4">
+            <button type="submit" className="btn btn-success fw-bold">Sign Up</button>
+            <Link to="/login" className="btn btn-outline-danger">Already have an account?</Link>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }

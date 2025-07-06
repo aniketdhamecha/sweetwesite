@@ -23,12 +23,8 @@ export default function Login() {
     console.log("Login response:", json); // For debugging
 
     if (json.success) {
-      // ✅ Save the user email to localStorage
       localStorage.setItem("userEmail", credentails.email);
-      // ✅ Save the authToken to localStorage
       localStorage.setItem("authToken", json.authToken);
-
-      // ✅ Redirect to home page
       navigate("/");
     } else {
       alert("Login failed: " + json.error);
@@ -40,42 +36,46 @@ export default function Login() {
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit}>
-        <div className='container'>
-
+    <div className="signup-bg d-flex align-items-center justify-content-center" style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
+      <div className="card p-4 shadow-lg rounded" style={{ width: '100%', maxWidth: '500px' }}>
+        <h2 className="text-center text-success mb-4">Login to Your Account</h2>
+        <form onSubmit={handleSubmit}>
           {/* Email */}
           <div className="mb-3">
-            <label htmlFor="email" className="form-label">Email address</label>
+            <label htmlFor="email" className="form-label fw-semibold">Email address</label>
             <input
               type="email"
-              className="form-control"
+              className="form-control shadow-sm"
               id="email"
               name="email"
               value={credentails.email}
               onChange={onChange}
+              required
             />
-            <div className="form-text">We'll never share your email with anyone else.</div>
+            <div className="form-text text-muted">We'll never share your email.</div>
           </div>
 
           {/* Password */}
           <div className="mb-3">
-            <label htmlFor="password" className="form-label">Password</label>
+            <label htmlFor="password" className="form-label fw-semibold">Password</label>
             <input
               type="password"
-              className="form-control"
+              className="form-control shadow-sm"
               id="password"
               name="password"
               value={credentails.password}
               onChange={onChange}
+              required
             />
           </div>
 
           {/* Buttons */}
-          <button type="submit" className="btn btn-success">Submit</button>
-          <Link to="/signup" className="btn btn-danger m-3">I'm a new user</Link>
-        </div>
-      </form>
-    </>
+          <div className="d-grid gap-2 mt-4">
+            <button type="submit" className="btn btn-success fw-bold">Login</button>
+            <Link to="/signup" className="btn btn-outline-danger">New user? Sign up</Link>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }
