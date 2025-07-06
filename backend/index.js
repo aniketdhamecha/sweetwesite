@@ -27,6 +27,8 @@ app.use(express.json());
 app.use("/api", require("./routes/CreateUser"));
 app.use("/api", require("./routes/displayData"));
 app.use("/api", require("./routes/loginuser"));
+app.use("/api", require("./routes/OrderData"));
+app.use("/api", require("./routes/myOrderData"));
 
 
 // Sample route

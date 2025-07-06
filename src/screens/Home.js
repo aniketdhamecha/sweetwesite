@@ -144,8 +144,9 @@ export const Home = () => {
                 {foodItem.length > 0 ? (
                   foodItem
                     .filter(
-                      (item) => ((item.CategoryName === category.CategoryName) &&
-                      (item.name.toLowerCase().includes(search.toLowerCase())))
+                      (item) =>
+                        item.CategoryName === category.CategoryName &&
+                        item.name.toLowerCase().includes(search.toLowerCase())
                     )
                     .map((filteredItem) => (
                       <div
@@ -153,9 +154,10 @@ export const Home = () => {
                         className="col-12 col-md-6 col-lg-3 mb-3"
                       >
                         <Card
-                          foodName={filteredItem.name}
+                          foodItem={filteredItem}
                           options={filteredItem.options[0]}
-                          foodImage={filteredItem.img}
+                          ImgSrc={filteredItem.img}
+                          foodName={filteredItem.name}
                         />
                       </div>
                     ))

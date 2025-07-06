@@ -1,5 +1,5 @@
-import React from 'react'
-import { Link , useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const [credentails, setCredentials] = React.useState({ email: "", password: "" });
@@ -7,6 +7,7 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const response = await fetch("http://localhost:5000/api/loginuser", {
       method: "POST",
       headers: {
@@ -14,15 +15,23 @@ export default function Login() {
       },
       body: JSON.stringify({
         email: credentails.email,
-        password: credentails.password
+        password: credentails.password,
       }),
     });
+
     const json = await response.json();
-    console.log(json);
+    console.log("Login response:", json); // For debugging
+
     if (json.success) {
-      navigate("/"); // Redirect to home page on successful login
+      // ✅ Save the user email to localStorage
+      localStorage.setItem("userEmail", credentails.email);
+      // ✅ Save the authToken to localStorage
+      localStorage.setItem("authToken", json.authToken);
+
+      // ✅ Redirect to home page
+      navigate("/");
     } else {
-      alert("Error creating user: " + json.error);
+      alert("Login failed: " + json.error);
     }
   };
 
@@ -38,19 +47,33 @@ export default function Login() {
           {/* Email */}
           <div className="mb-3">
             <label htmlFor="email" className="form-label">Email address</label>
-            <input type="email" className="form-control" id="email" name="email" value={credentails.email} onChange={onChange} />
+            <input
+              type="email"
+              className="form-control"
+              id="email"
+              name="email"
+              value={credentails.email}
+              onChange={onChange}
+            />
             <div className="form-text">We'll never share your email with anyone else.</div>
           </div>
 
           {/* Password */}
           <div className="mb-3">
             <label htmlFor="password" className="form-label">Password</label>
-            <input type="password" className="form-control" id="password" name="password" value={credentails.password} onChange={onChange} />
+            <input
+              type="password"
+              className="form-control"
+              id="password"
+              name="password"
+              value={credentails.password}
+              onChange={onChange}
+            />
           </div>
 
           {/* Buttons */}
           <button type="submit" className="btn btn-success">Submit</button>
-          <Link to="/SignUp" className="btn btn-danger m-3">i'm a new user</Link>
+          <Link to="/signup" className="btn btn-danger m-3">I'm a new user</Link>
         </div>
       </form>
     </>

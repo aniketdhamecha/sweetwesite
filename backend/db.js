@@ -31,8 +31,6 @@ const mongoDB = async () => {
     const foodCategoryData = await foodCategory.find({}).toArray();
     global.food_items = data;
     global.food_category = foodCategoryData;
-    console.log("Fetched food_items:", global.food_items);
-    console.log("Fetched foodCategory:", global.food_category);
     
   } catch (err) {
     console.error("Error fetching food_items:", err);
