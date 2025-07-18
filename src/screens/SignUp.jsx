@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function SignUp() {
   const [credentails, setCredentials] = React.useState({
@@ -8,6 +9,7 @@ export default function SignUp() {
     location: "",
     password: ""
   });
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,6 +29,7 @@ export default function SignUp() {
     const json = await response.json();
     console.log(json);
     if (json.success) {
+      navigate("/login");
       alert("User created successfully");
     } else {
       alert("Error creating user: " + json.error);

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Card from "../components/Card";
 import Footer from "../components/Footer";
+import i1 from "../img/img1.jpg";
+import i2 from "../img/img2.jpg";
+import i3 from "../img/img3.jpg";
 
 export const Home = () => {
   const [search, setSearch] = useState("");
@@ -66,7 +69,7 @@ export const Home = () => {
               <input
                 className="form-control w-50 p-2 fs-5 rounded-3 shadow border-0"
                 type="search"
-                placeholder="🔍 Search your food..."
+                placeholder="🔍 Search food, category or exact price..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -77,26 +80,38 @@ export const Home = () => {
           <div className="carousel-inner">
             <div className="carousel-item active">
               <img
-                src="https://picsum.photos/seed/burger/900/300"
+                src={i1}
                 className="d-block w-100"
                 alt="Burger"
-                style={{ objectFit: "cover", filter: "brightness(60%)" }}
+                style={{
+                  objectFit: "cover",
+                  filter: "brightness(60%)",
+                  height: "450px",
+                }}
               />
             </div>
             <div className="carousel-item">
               <img
-                src="https://picsum.photos/seed/pizza/900/300"
+                src={i2}
                 className="d-block w-100"
                 alt="Pizza"
-                style={{ objectFit: "cover", filter: "brightness(60%)" }}
+                style={{
+                  objectFit: "cover",
+                  filter: "brightness(60%)",
+                  height: "450px",
+                }}
               />
             </div>
             <div className="carousel-item">
               <img
-                src="https://picsum.photos/seed/sandwich/900/300"
+                src={i3}
                 className="d-block w-100"
                 alt="Sandwich"
-                style={{ objectFit: "cover", filter: "brightness(60%)" }}
+                style={{
+                  objectFit: "cover",
+                  filter: "brightness(60%)",
+                  height: "450px",
+                }}
               />
             </div>
           </div>
@@ -126,38 +141,53 @@ export const Home = () => {
       {/* Food Section */}
       <div className="container my-4">
         {foodCat.length > 0 ? (
-          foodCat.map((category) => (
-            <div key={category._id} className="mb-5">
-              <h3 className="text-success fw-bold border-bottom border-2 border-success pb-2 mb-4">
-                🍽️ {category.CategoryName}
-              </h3>
-              <div className="row">
-                {foodItem.length > 0 ? (
-                  foodItem
-                    .filter(
-                      (item) =>
-                        item.CategoryName === category.CategoryName &&
-                        item.name.toLowerCase().includes(search.toLowerCase())
-                    )
-                    .map((filteredItem) => (
-                      <div
-                        key={filteredItem._id}
-                        className="col-12 col-md-6 col-lg-3 mb-4"
-                      >
-                        <Card
-                          foodItem={filteredItem}
-                          options={filteredItem.options[0]}
-                          ImgSrc={filteredItem.img}
-                          foodName={filteredItem.name}
-                        />
-                      </div>
-                    ))
-                ) : (
-                  <div className="text-center text-muted">No items found</div>
-                )}
+          foodCat.map((category) => {
+            // Filter food items matching this category and the search
+            const matchedItems = foodItem.filter((item) => {
+              const nameMatch = item.name
+                .toLowerCase()
+                .includes(search.toLowerCase());
+              const categoryMatch = item.CategoryName
+                .toLowerCase()
+                .includes(search.toLowerCase());
+              const priceMatch =
+                !isNaN(search) &&
+                Object.values(item.options[0]).some(
+                  (price) => Number(price) === Number(search)
+                );
+
+              return (
+                item.CategoryName === category.CategoryName &&
+                (nameMatch || categoryMatch || priceMatch)
+              );
+            });
+
+            // Skip category if no items match
+            if (matchedItems.length === 0) return null;
+
+            return (
+              <div key={category._id} className="mb-5">
+                <h3 className="text-success fw-bold border-bottom border-2 border-success pb-2 mb-4">
+                  🍽 {category.CategoryName}
+                </h3>
+                <div className="row">
+                  {matchedItems.map((filteredItem) => (
+                    <div
+                      key={filteredItem._id}
+                      className="col-12 col-md-6 col-lg-3 mb-4"
+                    >
+                      <Card
+                        foodItem={filteredItem}
+                        options={filteredItem.options[0]}
+                        ImgSrc={filteredItem.img}
+                        foodName={filteredItem.name}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="text-center text-muted">No categories found</div>
         )}

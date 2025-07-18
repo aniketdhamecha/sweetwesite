@@ -4,6 +4,7 @@ import Cart from "../screens/Cart";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { Link, useNavigate } from "react-router-dom";
+import "./Navbar.css"; // Add a CSS file for custom styles
 
 const Navbar = () => {
   const [cartView, setCartView] = React.useState(false);
@@ -16,10 +17,10 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-success shadow-lg">
+      <nav className="navbar navbar-expand-lg glass-navbar shadow-lg">
         <div className="container-fluid">
           <Link className="navbar-brand fs-2 fw-bold fst-italic text-light" to="/">
-            🍽️ GoFood
+            🍪 SweetWeb
           </Link>
           <button
             className="navbar-toggler"

@@ -8,13 +8,15 @@ export const Card = (props) => {
 
   const [qty, setQty] = useState(1);
   const [size, setSize] = useState("");
-  const [imgUrl, setImgUrl] = useState(""); 
+  const [imgUrl, setImgUrl] = useState("");
+  const [localStock, setLocalStock] = useState(props.foodItem.stock || 0);
   const priceRef = useRef();
 
   const options = props.options;
   const priceOptions = Object.keys(options);
   const foodItem = props.foodItem;
-  const finalPrice = qty * parseInt(options[size]);
+  const finalPrice = qty * parseInt(options[size] || 0);
+  const isOutOfStock = localStock <= 0;
 
   const fetchImageFromUnsplash = async (query) => {
     try {
@@ -22,23 +24,27 @@ export const Card = (props) => {
         `https://api.unsplash.com/search/photos?query=${query}&client_id=BpzoFEjkRLGCqDuwpB7yjFH3KUFqj42sMz5Z72zqdnE`
       );
       const data = await res.json();
-      if (data.results && data.results.length > 0) {
+      if (data.results?.length > 0) {
         setImgUrl(data.results[0].urls.small);
       } else {
         setImgUrl("https://via.placeholder.com/300x200?text=No+Image");
       }
-    } catch (err) {
-      console.error("Unsplash fetch error:", err);
+    } catch {
       setImgUrl("https://via.placeholder.com/300x200?text=Error");
     }
   };
 
   useEffect(() => {
-    setSize(priceRef.current.value);
+    setSize(priceRef.current?.value || "");
     fetchImageFromUnsplash(props.foodItem.name);
   }, [props.foodItem.name]);
 
   const handleAddToCart = async () => {
+    if (localStock < qty) {
+      alert("Not enough stock available!");
+      return;
+    }
+
     const existingFood = data.find(item => item.id === foodItem._id && item.size === size);
     if (existingFood) {
       await dispatch({ type: "UPDATE", id: foodItem._id, price: finalPrice, qty });
@@ -52,81 +58,98 @@ export const Card = (props) => {
         qty
       });
     }
+
+    try {
+      const res = await fetch("http://localhost:5000/api/updateStock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ foodId: foodItem._id, quantity: qty })
+      });
+
+      const result = await res.json();
+      if (result.success) {
+        setLocalStock(result.newStock);
+        if (result.newStock === 0) {
+          alert(`${props.foodItem.name} is now out of stock.`);
+        }
+      } else {
+        alert(result.message || "Failed to update stock");
+      }
+    } catch {
+      alert("Error updating stock");
+    }
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
+      initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ scale: 1.05 }}
-      transition={{ duration: 0.4, ease: "easeInOut" }}
+      whileHover={{ scale: 1.04 }}
+      transition={{ duration: 0.3 }}
       className="my-3 mx-2"
     >
       <div
-        className="card border-0 shadow-lg rounded-4 backdrop-blur"
+        className="card border-0 rounded-4 shadow-lg"
         style={{
-          width: "18rem",
-          maxHeight: "420px",
-          background: "rgba(255, 255, 255, 0.05)",
-          backdropFilter: "blur(8px)",
-          border: "1px solid rgba(255, 255, 255, 0.1)",
-          boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.2)",
-          transition: "transform 0.3s ease"
+          width: "20rem",
+          background: "#f9f9f9",
+          overflow: "hidden"
         }}
       >
         <img
           src={imgUrl || "https://via.placeholder.com/300x200?text=Loading..."}
-          className="card-img-top rounded-top-4"
+          className="card-img-top"
           alt={props.foodItem.name}
           style={{
-            height: "150px",
+            height: "180px",
             objectFit: "cover",
-            borderTopLeftRadius: "1rem",
-            borderTopRightRadius: "1rem",
             transition: "transform 0.3s ease",
-            filter: "brightness(0.9)"
+            borderTopLeftRadius: "1rem",
+            borderTopRightRadius: "1rem"
           }}
         />
+        <div className="card-body p-3 d-flex flex-column justify-content-between" style={{ minHeight: "260px" }}>
+          <h5 className="card-title mb-2 fw-bold">{props.foodItem.name}</h5>
+          <p className="text-muted small mb-2">{props.foodItem.description}</p>
 
-        <div className="card-body d-flex flex-column justify-content-between">
-          <div>
-            <h5 className="card-title text-success fw-bold">{props.foodItem.name}</h5>
-            <p className="card-text text-muted small">{props.foodItem.description}</p>
+          <div className="d-flex justify-content-between align-items-center mb-2">
+            <span className={`badge rounded-pill ${isOutOfStock ? "bg-danger" : "bg-success"}`}>
+              {isOutOfStock ? "Out of Stock" : `Stock: ${localStock}`}
+            </span>
+            <span className="fw-bold">₹{finalPrice}/-</span>
           </div>
 
-          <div className="container w-100 d-flex flex-column align-items-start">
-            <div className="d-flex w-100 justify-content-between">
-              <select
-                className="form-select form-select-sm w-50 me-2 border-success shadow-sm"
-                onChange={(e) => setQty(e.target.value)}
-              >
-                {Array.from(Array(6), (_, i) => (
-                  <option key={i + 1} value={i + 1}>{i + 1}</option>
-                ))}
-              </select>
+          <div className="d-flex gap-2 mb-2">
+            <select
+              className="form-select form-select-sm"
+              onChange={(e) => setQty(e.target.value)}
+              disabled={isOutOfStock}
+            >
+              {Array.from(Array(6), (_, i) => (
+                <option key={i + 1} value={i + 1}>{i + 1}</option>
+              ))}
+            </select>
 
-              <select
-                className="form-select form-select-sm w-50 border-success shadow-sm"
-                onChange={(e) => setSize(e.target.value)}
-                ref={priceRef}
-              >
-                {priceOptions.map((data) => (
-                  <option key={data} value={data}>{data}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="mt-3 w-100 d-flex justify-content-between align-items-center">
-              <span className="fw-bold fs-6 text-dark">💸 ₹{finalPrice}/-</span>
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                className="btn btn-sm btn-outline-success fw-semibold shadow"
-                onClick={handleAddToCart}
-              >
-                🍽️ Add
-              </motion.button>
-            </div>
+            <select
+              className="form-select form-select-sm"
+              onChange={(e) => setSize(e.target.value)}
+              ref={priceRef}
+              disabled={isOutOfStock}
+            >
+              {priceOptions.map(option => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
           </div>
+
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            className={`btn btn-sm w-100 fw-semibold shadow ${isOutOfStock ? "btn-secondary" : "btn-success"}`}
+            onClick={handleAddToCart}
+            disabled={isOutOfStock}
+          >
+            {isOutOfStock ? "Unavailable" : "Add to Cart 🍽"}
+          </motion.button>
         </div>
       </div>
     </motion.div>

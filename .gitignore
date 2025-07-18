@@ -1,23 +1,35 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Node.js
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
 
-# dependencies
-node_modules
-/.pnp
-.pnp.js
+# Logs
+logs
+*.log
+pids
+*.pid
+*.seed
+*.pid.lock
 
-# testing
-/coverage
+# Build output
+dist/
+build/
 
-# production
-/build
-
-# misc
+# OS files
 .DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+Thumbs.db
 
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Environment files
+.env
+
+# IDE files
+.vscode/
+.idea/
+
+# Public generated assets (optional)
+public/build/
+
+# Temporary files
+*.swp
+*.swo
